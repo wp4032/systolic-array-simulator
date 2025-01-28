@@ -45,21 +45,21 @@ export const Arrow = ({
             );
           case "left":
             return (
-              <div className={`absolute -translate-y-1/2 ${className}`} style={{ width: length, height: chevronSize }}>
+              <div className={`absolute -translate-y-1/2 -translate-x-[100%] ${className}`} style={{ width: length, height: chevronSize }}>
                 {/* Line */}
-                <div className={`absolute top-1/2 right-0 bg-${color} transform -translate-y-1/2 rounded-full`} 
-                    style={{ width: length - chevronSize/2 + 2, height: strokeWidth, backgroundColor: color }} />
+                <div className={`absolute top-1/2 right-0 transform -translate-y-1/2 rounded-full`} 
+                    style={{ width: length, height: strokeWidth, backgroundColor: color }} />
                 {/* Chevron */}
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
+                <div className="absolute -left-[1px] top-1/2 transform -translate-y-1/2">
                   <svg 
-                    width={chevronSize} 
+                    width={chevronSize/2} 
                     height={chevronSize} 
-                    viewBox="0 0 24 24" 
+                    viewBox={`0 0 ${chevronSize/2} ${chevronSize}`} 
                     fill="none"
                     className={`text-${color}`}
                   >
                     <path 
-                      d="M15 18L9 12L15 6" 
+                      d={`M${chevronSize/2-1} 1L1 ${chevronSize/2}L${chevronSize/2-1} ${chevronSize-1}`}
                       stroke={color} 
                       strokeWidth={strokeWidth} 
                       strokeLinecap="round" 
