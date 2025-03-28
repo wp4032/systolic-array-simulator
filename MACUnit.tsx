@@ -35,13 +35,13 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
   };
   
   const is_new_weight = sumDigits(id) === (weight_counter ?? 0) - 1;
+  const row = parseInt((id ?? "").slice(0, 1), 10);
+  const weight_y_offset = row * 330 + 85;
 
   const left_input_color = left_input_active ? "text-red-500" : "text-neutral-500";
   const weight_color = weight_active ? "text-green-500" : "text-neutral-500";
   // const top_input_color = top_input_active ? "text-blue-500" : "text-neutral-500";
   const acc_color = acc_active ? "text-blue-500" : "text-neutral-500";
-
-  console.log('MAC Unit ID:', id, 'Left Input Flush Active:', left_input_flush_active)
 
   return (
     <div className="relative w-[300px] h-[300px] bg-neutral-900 rounded-2xl border border-neutral-700">
@@ -52,7 +52,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
             case ((animationPhase === 'update' || animationPhase === 'translate') && !is_new_weight && weight_active):
               return 'text-green-300';
             case (animationPhase === 'update' && weight_active && is_new_weight):
-              return '-top-[85px]';
+              return `-top-[${weight_y_offset}px]`;
             case (animationPhase === 'translate' && weight_active && is_new_weight):
               return 'top-[3px] visible translate-z-10 transition-all duration-1000 ease-in text-green-300';
             case (animationPhase === 'idle' && weight_active):
@@ -63,7 +63,22 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         })()}`}>
           {weight?.toFixed(2)}
         </p> 
-        <p className={`absolute -top-[20px] font-mono text-xs text-center select-none ${weight_color}`}>weight_r</p> 
+        <p className={`absolute -top-[20px] font-mono text-xs text-center select-none ${(() => {
+          switch (true) {
+            case (animationPhase === 'update' && weight_active && is_new_weight):
+              return "text-neutral-500";
+            case (animationPhase === 'update' && weight_active && !is_new_weight):
+              return "text-green-500";
+            case (animationPhase === 'idle' && weight_active):
+              return "text-green-500";
+            case (animationPhase === 'translate' && weight_active):
+              return "text-green-500";
+            default:
+              return 'text-neutral-500';
+          }
+        })()}`}>
+          weight_r
+        </p> 
       </div>  
       <div className="top_input_r absolute flex justify-center items-center absolute w-[50px] h-[25px] bg-black rounded top-[20%] left-2/3 -translate-x-1/2 -translate-y-1/2 border border-neutral-700">
         <p className="font-mono text-white text-xs text-center select-none">{top_input?.toFixed(2)}</p> 
@@ -76,8 +91,30 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         <Plus className="w-4 h-4 text-white" /> 
       </div>
       <div className="output_r absolute flex justify-center items-center absolute w-[50px] h-[25px] bg-black rounded top-[80%] left-1/2 -translate-x-1/2 -translate-y-1/2 border border-neutral-700">
-        <p className="font-mono text-white text-xs text-center select-none">{acc?.toFixed(2)}</p> 
-        <p className={`absolute top-[25px] font-mono text-xs text-center select-none ${acc_color}`}>output_r</p> 
+        <p className={`font-mono text-xs text-center select-none ${(() => {
+          switch (true) {
+            case (animationPhase === 'update'):
+              return 'invisible';
+            case (animationPhase === 'translate'):
+              return `invisible`;
+            case (animationPhase === 'idle' && acc_active):
+              return 'text-blue-300';
+            default:
+              return 'invisible';
+          }
+        })()}`}>{acc?.toFixed(2)}</p> 
+        <p className={`absolute top-[25px] font-mono text-xs text-center select-none ${(() => {
+          switch (true) {
+            case (animationPhase === 'update'):
+              return 'text-neutral-500';
+            case (animationPhase === 'translate'):
+              return `text-neutral-500`;
+            case (animationPhase === 'idle' && acc_active):
+              return 'text-blue-500';
+            default:
+              return 'text-neutral-500';
+          }
+        })()}`}>output_r</p> 
       </div>     
       <div className="input_r absolute flex justify-center items-center absolute w-[25px] h-[50px] bg-black rounded top-1/2 left-[20%] -translate-x-1/2 -translate-y-1/2 border border-neutral-700">  
         <div className={`absolute font-mono text-white text-xs text-center -rotate-90 select-none w-[50px] ${(() => {
