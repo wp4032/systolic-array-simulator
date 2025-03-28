@@ -16,16 +16,25 @@ interface MACUnitProps {
   is_left?: boolean;
   ifmap_buf?: number[][];
   weight_buf?: number[][];
+  weight_counter?: number;
   accumulated_results?: number[];
   animationPhase: 'update' | 'translate' | 'idle';
 }
 
-export const MACUnit = ({ className, left_input, left_input_flush, top_input, weight, acc, id, is_bottom, is_right, is_top, is_left, ifmap_buf, weight_buf, accumulated_results, animationPhase }: MACUnitProps) => {
+export const MACUnit = ({ className, left_input, left_input_flush, top_input, weight, weight_counter, acc, id, is_bottom, is_right, is_top, is_left, ifmap_buf, weight_buf, accumulated_results, animationPhase }: MACUnitProps) => {
   const left_input_active = left_input !== 0;
   const left_input_flush_active = left_input_flush !== 0;
   const top_input_active = top_input !== 0;
   const weight_active = weight !== 0;
   const acc_active = acc !== 0;
+
+  const sumDigits = (id: string | undefined): number => {
+    return (id ?? "")
+      .split("")
+      .reduce((sum, digit) => sum + parseInt(digit, 10), 0);
+  };
+  
+  const is_new_weight = sumDigits(id) === (weight_counter ?? 0) - 1;
 
   const left_input_color = left_input_active ? "text-red-500" : "text-neutral-500";
   const weight_color = weight_active ? "text-green-500" : "text-neutral-500";
@@ -38,7 +47,22 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
     <div className="relative w-[300px] h-[300px] bg-neutral-900 rounded-2xl border border-neutral-700">
       <p className="text-white font-mono text-neutral-300 text-center text-xs absolute bottom-[10px] left-[10px] leading-none">MAC Unit {id}</p>
       <div className="weight_r absolute flex justify-center items-center absolute w-[50px] h-[25px] bg-black rounded top-[20%] left-1/3 -translate-x-1/2 -translate-y-1/2 border border-neutral-700">
-        <p className="font-mono text-white text-xs text-center select-none">{weight?.toFixed(2)}</p> 
+        <p className={`absolute font-mono text-white text-xs text-center select-none ${(() => {
+          switch (true) {
+            case ((animationPhase === 'update' || animationPhase === 'translate') && !is_new_weight && weight_active):
+              return 'text-green-300';
+            case (animationPhase === 'update' && weight_active && is_new_weight):
+              return '-top-[85px]';
+            case (animationPhase === 'translate' && weight_active && is_new_weight):
+              return 'top-[3px] visible translate-z-10 transition-all duration-1000 ease-in text-green-300';
+            case (animationPhase === 'idle' && weight_active):
+              return 'text-green-300';
+            default:
+              return 'invisible';
+          }
+        })()}`}>
+          {weight?.toFixed(2)}
+        </p> 
         <p className={`absolute -top-[20px] font-mono text-xs text-center select-none ${weight_color}`}>weight_r</p> 
       </div>  
       <div className="top_input_r absolute flex justify-center items-center absolute w-[50px] h-[25px] bg-black rounded top-[20%] left-2/3 -translate-x-1/2 -translate-y-1/2 border border-neutral-700">
