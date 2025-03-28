@@ -5,6 +5,7 @@ import { RoundedArrow } from "./RoundedArrow";
 interface MACUnitProps {
   className?: string;
   left_input?: number;
+  left_input_flush?: number;
   top_input?: number;
   weight?: number;
   acc?: number;
@@ -12,10 +13,16 @@ interface MACUnitProps {
   is_bottom?: boolean;
   is_right?: boolean;
   is_top?: boolean;
+  is_left?: boolean;
+  ifmap_buf?: number[][];
+  weight_buf?: number[][];
+  accumulated_results?: number[];
+  animationPhase: 'update' | 'translate' | 'idle';
 }
 
-export const MACUnit = ({ className, left_input, top_input, weight, acc, id, is_bottom, is_right, is_top }: MACUnitProps) => {
+export const MACUnit = ({ className, left_input, left_input_flush, top_input, weight, acc, id, is_bottom, is_right, is_top, is_left, ifmap_buf, weight_buf, accumulated_results, animationPhase }: MACUnitProps) => {
   const left_input_active = left_input !== 0;
+  const left_input_flush_active = left_input_flush !== 0;
   const top_input_active = top_input !== 0;
   const weight_active = weight !== 0;
   const acc_active = acc !== 0;
@@ -24,6 +31,8 @@ export const MACUnit = ({ className, left_input, top_input, weight, acc, id, is_
   const weight_color = weight_active ? "text-green-500" : "text-neutral-500";
   // const top_input_color = top_input_active ? "text-blue-500" : "text-neutral-500";
   const acc_color = acc_active ? "text-blue-500" : "text-neutral-500";
+
+  console.log('MAC Unit ID:', id, 'Left Input Flush Active:', left_input_flush_active)
 
   return (
     <div className="relative w-[300px] h-[300px] bg-neutral-900 rounded-2xl border border-neutral-700">
@@ -47,8 +56,47 @@ export const MACUnit = ({ className, left_input, top_input, weight, acc, id, is_
         <p className={`absolute top-[25px] font-mono text-xs text-center select-none ${acc_color}`}>output_r</p> 
       </div>     
       <div className="input_r absolute flex justify-center items-center absolute w-[25px] h-[50px] bg-black rounded top-1/2 left-[20%] -translate-x-1/2 -translate-y-1/2 border border-neutral-700">  
-        <p className="font-mono text-white text-xs text-center -rotate-90 select-none">{left_input?.toFixed(2)}</p>
-        <p className={`absolute -left-[40px] font-mono text-xs text-center select-none -rotate-90 ${left_input_color}`}>input_r</p> 
+        <div className={`absolute font-mono text-white text-xs text-center -rotate-90 select-none w-[50px] ${(() => {
+          switch (true) {
+            case (animationPhase === 'update' && left_input_active):
+              return `${is_left ? '-left-[100px] text-white' : '-left-[339px] text-red-300'}`;
+            case (animationPhase === 'translate' && left_input_active):
+              return `left-1/2 -translate-x-1/2 visible translate-z-10 transition-all duration-1000 ease-in text-red-300`;
+            case (animationPhase === 'idle' && left_input_active):
+              return 'text-red-300';
+            default:
+              return 'invisible';
+          }
+        })()}`}>
+          {left_input?.toFixed(2)}
+        </div>
+        <div className={`absolute font-mono text-white text-xs text-center -rotate-90 select-none ${(() => {
+          switch (true) {
+            case (animationPhase === 'update' && left_input_flush_active && is_right):
+              return 'text-red-300';
+            case (animationPhase === 'translate' && left_input_flush_active && is_right):
+              return `left-1/2 translate-x-[260px] visible translate-z-10 transition-all duration-1000 ease-in opacity-0`;
+            default:
+              return 'invisible';
+          }
+        })()}`}>
+          {left_input_flush?.toFixed(2)}
+          {/* {animationPhase} {id} {left_input_flush} */}
+        </div>
+        <p className={`absolute -left-[40px] font-mono text-xs text-center select-none -rotate-90 ${(() => {
+          switch (true) {
+            case (animationPhase === 'update' && left_input_flush_active):
+              return "text-red-500";
+            case (animationPhase === 'idle' && left_input_active):
+              return "text-red-500";
+            case (animationPhase === 'translate' && left_input_active):
+              return "text-red-500";
+            default:
+              return 'text-neutral-500';
+          }
+        })()}`}>
+          input_r
+          </p> 
       </div>
 
       {/* Arrows */}

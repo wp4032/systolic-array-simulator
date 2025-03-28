@@ -18,7 +18,7 @@ export class SystolicArray {
     this.height = height;
     this.weight_counter = 0;
     this.cells = Array.from({ length: height }, () =>
-      Array.from({ length: width }, () => ({
+      Array.from({ length: width+1 }, () => ({
         left_input: 0,
         top_input: 0,
         weight: 0,
@@ -59,9 +59,10 @@ export class SystolicArray {
     console.log('Step ', this.weight_counter, ' Inputs:', inputs);
     console.log('Step ', this.weight_counter, ' Weights:', weights);
 
+    console.log(this.cells);
     // Shift weights from top and inputs from left
     for (let y = 0; y < this.height; y++) {
-      for (let x = this.width - 1; x > 0; x--) {
+      for (let x = this.width; x > 0; x--) {
         this.cells[y][x].left_input = this.cells[y][x-1].left_input;
       }
     }
