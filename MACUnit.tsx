@@ -16,12 +16,14 @@ interface MACUnitProps {
   is_left?: boolean;
   ifmap_buf?: number[][];
   weight_buf?: number[][];
+  ofmap_buf?: number[][];
   weight_counter?: number;
   accumulated_results?: number[];
+  systolic_array_size: number;
   animationPhase: 'update' | 'translate' | 'idle';
 }
 
-export const MACUnit = ({ className, left_input, left_input_flush, top_input, weight, weight_counter, acc, id, is_bottom, is_right, is_top, is_left, ifmap_buf, weight_buf, accumulated_results, animationPhase }: MACUnitProps) => {
+export const MACUnit = ({ className, left_input, left_input_flush, top_input, weight, weight_counter, acc, id, is_bottom, is_right, is_top, is_left, ifmap_buf, weight_buf, ofmap_buf, accumulated_results, systolic_array_size, animationPhase }: MACUnitProps) => {
   const left_input_active = left_input !== 0;
   const left_input_flush_active = left_input_flush !== 0;
   const top_input_active = top_input !== 0;
@@ -36,7 +38,11 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
   
   const is_new_weight = sumDigits(id) === (weight_counter ?? 0) - 1;
   const row = parseInt((id ?? "").slice(0, 1), 10);
+  const col = parseInt((id ?? "").slice(1, 2), 10);
   const weight_y_offset = row * 330 + 85;
+  
+  const ofmap_flush_status = weight_counter && weight_counter - systolic_array_size - 1 - col >= 0;
+  const ofmap_flush = ofmap_buf?.[weight_counter ? weight_counter - systolic_array_size - 1 - col : 0]?.[col]?.toFixed(2);
 
   const left_input_color = left_input_active ? "text-red-500" : "text-neutral-500";
   const weight_color = weight_active ? "text-green-500" : "text-neutral-500";
@@ -47,22 +53,32 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
     <div className="relative w-[300px] h-[300px] bg-neutral-900 rounded-2xl border border-neutral-700">
       <p className="text-white font-mono text-neutral-300 text-center text-xs absolute bottom-[10px] left-[10px] leading-none">MAC Unit {id}</p>
       <div className="weight_r absolute flex justify-center items-center absolute w-[50px] h-[25px] bg-black rounded top-[20%] left-1/3 -translate-x-1/2 -translate-y-1/2 border border-neutral-700">
-        <p className={`absolute font-mono text-white text-xs text-center select-none ${(() => {
+      <p
+        className={`absolute font-mono text-xs text-center select-none ${(() => {
           switch (true) {
             case ((animationPhase === 'update' || animationPhase === 'translate') && !is_new_weight && acc_active):
               return 'text-rose-300';
             case (animationPhase === 'update' && acc_active && is_new_weight):
-              return `-top-[${weight_y_offset}px]`;
+              return 'visible';
             case (animationPhase === 'translate' && acc_active && is_new_weight):
-              return 'top-[3px] visible translate-z-10 transition-all duration-1000 ease-in text-rose-300';
+              return 'visible translate-z-10 transition-all duration-1000 ease-in text-rose-300';
             case (animationPhase === 'idle' && acc_active):
               return 'text-rose-300';
             default:
               return 'invisible';
           }
-        })()}`}>
-          {weight?.toFixed(2)}
-        </p> 
+        })()}`}
+        style={
+          animationPhase === 'update' && acc_active && is_new_weight
+            ? { top: `-${weight_y_offset}px`, position: 'absolute' }
+            : animationPhase === 'translate' && acc_active && is_new_weight
+              ? { top: '50%', transform: 'translateY(-50%)', position: 'absolute', transition: 'all 1000ms ease-in' }
+              : undefined
+        }
+        >
+        {weight?.toFixed(2)}
+        </p>
+ 
         <p className={`absolute -top-[20px] font-mono text-xs text-center select-none ${(() => {
           switch (true) {
             case (animationPhase === 'update' && acc_active && is_new_weight):
@@ -144,6 +160,18 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
               return 'invisible';
           }
         })()}`}>{acc?.toFixed(2)}</p> 
+        <p className={`absolute font-mono text-xs text-center select-none ${(() => {
+          switch (true) {
+            case (animationPhase === 'update' && is_bottom && ofmap_flush_status):
+              return 'text-blue-300';
+            case (animationPhase === 'translate' && is_bottom && ofmap_flush_status):
+              return `translate-y-[100px] visible translate-z-10 transition-all duration-1000 ease-in opacity-0`;
+            case (animationPhase === 'idle' && acc_active && is_bottom && ofmap_flush_status):
+              return 'invisible';
+            default:
+              return 'invisible';
+          }
+        })()}`}>{ofmap_flush}</p> 
         <p className={`absolute top-[25px] font-mono text-xs text-center select-none ${(() => {
           switch (true) {
             case (animationPhase === 'update'):
@@ -156,9 +184,11 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
               return 'text-neutral-500';
           }
         })()}`}>output_r</p> 
-      </div>     
+      </div>         
+
+      {/* Left Input */}
       <div className="input_r absolute flex justify-center items-center absolute w-[25px] h-[50px] bg-black rounded top-1/2 left-[20%] -translate-x-1/2 -translate-y-1/2 border border-neutral-700">  
-        <div className={`absolute font-mono text-white text-xs text-center -rotate-90 select-none w-[50px] ${(() => {
+        <div className={`absolute font-mono text-xs text-center -rotate-90 select-none w-[50px] ${(() => {
           switch (true) {
             case (animationPhase === 'update' && left_input_active):
               return `${is_left ? '-left-[100px] text-white' : '-left-[339px] text-red-300'}`;
@@ -172,7 +202,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         })()}`}>
           {left_input?.toFixed(2)}
         </div>
-        <div className={`absolute font-mono text-white text-xs text-center -rotate-90 select-none ${(() => {
+        <div className={`absolute font-mono text-xs text-center -rotate-90 select-none ${(() => {
           switch (true) {
             case (animationPhase === 'update' && left_input_flush_active && is_right):
               return 'text-red-300';
@@ -183,7 +213,6 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
           }
         })()}`}>
           {left_input_flush?.toFixed(2)}
-          {/* {animationPhase} {id} {left_input_flush} */}
         </div>
         <p className={`absolute -left-[40px] font-mono text-xs text-center select-none -rotate-90 ${(() => {
           switch (true) {
@@ -250,9 +279,10 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
               return '#888';
           }
         })()} 
-        className="absolute top-1/2 -left-[245px] -z-1" 
-      /> 
+        className={`absolute top-1/2 -left-[245px] ${animationPhase == 'translate' ? 'z-[2000]' : '-z-1'} `}
+        /> 
       }
+
       {is_right ? 
         <Arrow length={235} chevronSize={10} direction="right" color="#888" className="absolute top-1/2 left-[83px]" /> : 
         <Arrow length={235} chevronSize={0} direction="right" color="#888" className="absolute top-1/2 left-[83px]" />
@@ -323,6 +353,8 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         className="absolute top-[37.25%] left-[95px] -rotate-90 z-50" 
         radius={5} 
       />
+
+      {/* Top Input to Plus */}
       <RoundedArrow 
         points={[[0, 0], [0, 99], [-30, 99]]} 
         color={(() => {
