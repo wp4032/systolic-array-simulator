@@ -21,7 +21,7 @@ export const Arrow = ({
             return (
               <div className={`absolute -translate-y-1/2 ${className}`} style={{ width: length, height: chevronSize }}>
                 {/* Line */}
-                <div className={`absolute top-1/2 left-0 transform -translate-y-1/2 rounded-full`} 
+                <div className={`absolute top-1/2 left-0 transform -translate-y-1/2 rounded-full transition-colors duration-500 ease-in`} 
                     style={{ width: length, height: strokeWidth, backgroundColor: color }} />
                 {/* Chevron */}
                 <div className="absolute -right-[1px] top-1/2 transform -translate-y-1/2 ">
@@ -30,7 +30,7 @@ export const Arrow = ({
                     height={chevronSize} 
                     viewBox={`0 0 ${chevronSize/2} ${chevronSize}`} 
                     fill="none"
-                    className={`text-${color}`}
+                    className={`text-${color} transition-colors duration-500 ease-in`}
                   >
                     <path 
                       d={`M1 1L${chevronSize/2-1} ${chevronSize/2}L1 ${chevronSize-1}`}
@@ -38,6 +38,7 @@ export const Arrow = ({
                       strokeWidth={strokeWidth} 
                       strokeLinecap="round" 
                       strokeLinejoin="round"
+                      className="transition-colors duration-500 ease-in"
                     />
                   </svg>
                 </div>
@@ -47,7 +48,7 @@ export const Arrow = ({
             return (
               <div className={`absolute -translate-y-1/2 -translate-x-[100%] ${className}`} style={{ width: length, height: chevronSize }}>
                 {/* Line */}
-                <div className={`absolute top-1/2 right-0 transform -translate-y-1/2 rounded-full`} 
+                <div className={`absolute top-1/2 right-0 transform -translate-y-1/2 rounded-full transition-colors duration-500 ease-in`} 
                     style={{ width: length, height: strokeWidth, backgroundColor: color }} />
                 {/* Chevron */}
                 <div className="absolute -left-[1px] top-1/2 transform -translate-y-1/2">
@@ -56,7 +57,7 @@ export const Arrow = ({
                     height={chevronSize} 
                     viewBox={`0 0 ${chevronSize/2} ${chevronSize}`} 
                     fill="none"
-                    className={`text-${color}`}
+                    className={`text-${color} transition-colors duration-500 ease-in`}
                   >
                     <path 
                       d={`M${chevronSize/2-1} 1L1 ${chevronSize/2}L${chevronSize/2-1} ${chevronSize-1}`}
@@ -64,6 +65,7 @@ export const Arrow = ({
                       strokeWidth={strokeWidth} 
                       strokeLinecap="round" 
                       strokeLinejoin="round"
+                      className="transition-colors duration-500 ease-in"
                     />
                   </svg>
                 </div>
@@ -72,11 +74,11 @@ export const Arrow = ({
           case "up":
             return (
               <div className={`absolute ${className} -translate-x-1/2`} style={{ width: chevronSize, height: length }}>
-                <div className={`absolute top-0 left-1/2 bg-${color} transform -translate-y-1/2 -translate-x-1/2 rounded-full`} 
+                <div className={`absolute top-0 left-1/2 bg-${color} transform -translate-y-1/2 -translate-x-1/2 rounded-full transition-colors duration-500 ease-in`} 
                     style={{ height: length, width: strokeWidth, backgroundColor: color }} />
                 <div className="absolute top-0 left-1/2 transform" style={{ transform: `translateY(-${length / 2 + 10}px)` }}>
-                  <svg width={chevronSize} height={chevronSize} viewBox="0 0 24 24" fill="none" className={`text-${color} -translate-x-1/2`}>
-                    <path d="M6 18L12 12L18 18" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+                  <svg width={chevronSize} height={chevronSize} viewBox="0 0 24 24" fill="none" className={`text-${color} -translate-x-1/2 transition-colors duration-500 ease-in`}>
+                    <path d="M6 18L12 12L18 18" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className="transition-colors duration-500 ease-in" />
                   </svg>
                 </div>
               </div>
@@ -84,11 +86,11 @@ export const Arrow = ({
           case "down":
             return (
               <div className={`absolute ${className} -translate-x-1/2`} style={{ width: chevronSize, height: length }}>
-                <div className={`absolute top-1/2 left-1/2 bg-${color} transform -translate-y-1/2 -translate-x-1/2 rounded-full`} 
+                <div className={`absolute top-1/2 left-1/2 bg-${color} transform -translate-y-1/2 -translate-x-1/2 rounded-full transition-colors duration-500 ease-in`} 
                     style={{ height: length, width: strokeWidth, backgroundColor: color }} />
                 <div className="absolute left-0 -bottom-[1px] transform">
-                  <svg width={chevronSize} height={chevronSize/2} viewBox={`0 0 ${chevronSize} ${chevronSize/2}`} fill="none" className={`text-${color}`}>
-                    <path d={`M1 1L${chevronSize/2} ${chevronSize/2-1}L${chevronSize-1} 1`} stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+                  <svg width={chevronSize} height={chevronSize/2} viewBox={`0 0 ${chevronSize} ${chevronSize/2}`} fill="none" className={`text-${color} transition-colors duration-500 ease-in`}>
+                    <path d={`M1 1L${chevronSize/2} ${chevronSize/2-1}L${chevronSize-1} 1`} stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className="transition-colors duration-500 ease-in" />
                   </svg>
                 </div>
               </div>
@@ -134,7 +136,7 @@ export const SemiCircleArrow = ({
         width={radius * 4 / 3 + 1}
         height={radius * 2}
         fill="none"
-        className={`text-${color}`}
+        className={`text-${color} transition-colors duration-500 ease-in`}
       >
         <path
           d={path}
@@ -142,6 +144,7 @@ export const SemiCircleArrow = ({
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           fill="none"
+          className="transition-colors duration-500 ease-in"
         />
       </svg>
       
@@ -152,7 +155,7 @@ export const SemiCircleArrow = ({
           height={chevronSize} 
           viewBox={`-1 0 ${chevronSize / 2 + 1} ${chevronSize}`} 
           fill="none"
-          className={`text-${color}`}
+          className={`text-${color} transition-colors duration-500 ease-in`}
         >
           <path 
             d={`M${chevronSize / 2 - 1} 1L0 ${chevronSize / 2}L${chevronSize / 2 - 1} ${chevronSize - 1}`}
@@ -160,6 +163,7 @@ export const SemiCircleArrow = ({
             strokeWidth={strokeWidth} 
             strokeLinecap="round" 
             strokeLinejoin="round"
+            className="transition-colors duration-500 ease-in"
           />
         </svg>
       </div>
@@ -169,7 +173,7 @@ export const SemiCircleArrow = ({
 
 export const Curve = ({ className, color = "#666" }: { className: string, color?: string, strokeWidth?: number }) => (
   <div className={`flex h-4 w-full ${className}`}>
-    <svg className="" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 -1 94 56">
+    <svg className="transition-colors duration-500 ease-in" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 -1 94 56">
       <defs>
         <style>
           {`
@@ -178,6 +182,7 @@ export const Curve = ({ className, color = "#666" }: { className: string, color?
               stroke: ${color};
               stroke-width: 4;
               stroke-linecap: round;
+              transition: stroke 500ms ease-in;
             }
           `}
         </style>

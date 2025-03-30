@@ -28,28 +28,34 @@ export const OutputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, in
 
   // Add this useEffect to update values when animation state changes to "update"
   useEffect(() => {
-    if (animationState === "idle" && values) {
+    if (values) {
       const newValues = Array.from({ length: rows }, (_, i) =>
         Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)
       );
       
-      // Determine which cells have changed
-      const newHighlights = Array.from({ length: rows }, (_, i) =>
-        Array.from({ length: cols }, (_, j) => 
-          newValues[i][j] !== prevValuesRef.current[i]?.[j]
-        )
-      );
-      
-      setMatrixValues(newValues);
-      setHighlightedCells(newHighlights);
-      prevValuesRef.current = newValues;
-      
-      // Reset highlights after a short delay
-      const timer = setTimeout(() => {
-        setHighlightedCells(Array.from({ length: rows }, () => Array(cols).fill(false)));
-      }, 1000);
-      
-      return () => clearTimeout(timer);
+      if (animationState === "idle") {
+        // Determine which cells have changed
+        const newHighlights = Array.from({ length: rows }, (_, i) =>
+          Array.from({ length: cols }, (_, j) => 
+            newValues[i][j] !== prevValuesRef.current[i]?.[j]
+          )
+        );
+        
+        setMatrixValues(newValues);
+        setHighlightedCells(newHighlights);
+        prevValuesRef.current = newValues;
+        
+        // Reset highlights after a short delay
+        const timer = setTimeout(() => {
+          setHighlightedCells(Array.from({ length: rows }, () => Array(cols).fill(false)));
+        }, 1000);
+        
+        return () => clearTimeout(timer);
+      } else if (animationState === "init") {
+        // Just update values without highlighting when in init mode
+        setMatrixValues(newValues);
+        prevValuesRef.current = newValues;
+      }
     }
   }, [animationState, values, rows, cols]);
 

@@ -89,6 +89,7 @@ export const RoundedArrow: React.FC<RoundedArrowProps> = ({
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
+        className="transition-colors duration-500 ease-in"
       />
       <path
         d={arrowHeadPath}
@@ -97,6 +98,7 @@ export const RoundedArrow: React.FC<RoundedArrowProps> = ({
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
+        className="transition-colors duration-500 ease-in"
       />
     </svg>
   );

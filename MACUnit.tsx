@@ -79,7 +79,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         {weight?.toFixed(2)}
         </p>
  
-        <p className={`absolute -top-[20px] font-mono text-xs text-center select-none ${(() => {
+        <p className={`absolute -top-[20px] font-mono text-xs text-center select-none transition-colors duration-1000 ease-in ${(() => {
           switch (true) {
             case (animationPhase === 'update' && acc_active && is_new_weight):
               return "text-neutral-500";
@@ -115,7 +115,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
       </div>  
 
       {/* Multiply */}
-      <div className={`add_r flex justify-center items-center absolute w-[25px] h-[25px] bg-black rounded-full top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 leading-none border ${animationPhase == 'idle' && acc_active ? 'border-transparent' : 'border-neutral-700'}`} style={{ 
+      <div className={`add_r flex justify-center items-center absolute w-[25px] h-[25px] bg-black rounded-full top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 leading-none border transition-colors duration-500 ease-in ${animationPhase == 'idle' && acc_active ? 'border-transparent' : 'border-neutral-700'}`} style={{ 
         backgroundClip: 'padding-box', 
         boxShadow: '0 0 0 1px transparent, inset 0 0 0 1px rgba(0,0,0,0)', 
         background: (() => {
@@ -131,7 +131,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
       </div>
 
       {/* Plus */}
-      <div className={`mul_r flex justify-center items-center absolute w-[25px] h-[25px] bg-black rounded-full top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 leading-none border ${animationPhase == 'idle' && acc_active ? 'border-transparent' : 'border-neutral-700'}`} style={{ 
+      <div className={`mul_r flex justify-center items-center absolute w-[25px] h-[25px] bg-black rounded-full top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 leading-none border transition-colors duration-500 ease-in ${animationPhase == 'idle' && acc_active ? 'border-transparent' : 'border-neutral-700'}`} style={{ 
         backgroundClip: 'padding-box', 
         boxShadow: '0 0 0 1px transparent, inset 0 0 0 1px rgba(0,0,0,0)', 
         background: (() => {
@@ -172,7 +172,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
               return 'invisible';
           }
         })()}`}>{ofmap_flush}</p> 
-        <p className={`absolute top-[25px] font-mono text-xs text-center select-none ${(() => {
+        <p className={`absolute top-[25px] font-mono text-xs text-center select-none transition-colors duration-1000 ease-in ${(() => {
           switch (true) {
             case (animationPhase === 'update'):
               return 'text-neutral-500 transition-color duration-1000 ease-in';
@@ -214,7 +214,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         })()}`}>
           {left_input_flush?.toFixed(2)}
         </div>
-        <p className={`absolute -left-[40px] font-mono text-xs text-center select-none -rotate-90 ${(() => {
+        <p className={`absolute -left-[40px] font-mono text-xs text-center select-none -rotate-90 transition-colors duration-1000 ease-in ${(() => {
           switch (true) {
             case (animationPhase === 'update' && left_input_flush_active):
               return "text-red-500";
@@ -240,7 +240,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
             default:
               return '#888';
           }
-        })()} className="absolute -top-[15px] left-1/3" /> : 
+        })()} className={`absolute -top-[15px] left-1/3 transition-colors duration-500 ease-in`}/> : 
         <Arrow length={55} chevronSize={10} direction="down" color={(() => {
           switch (animationPhase) {
             case 'translate':
@@ -248,7 +248,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
             default:
               return '#888';
           }
-        })()} className="absolute -top-[34px] left-1/3" />
+        })()} className={`absolute -top-[34px] left-1/3 transition-colors duration-500 ease-in`} />
       }    
 
       {/* Arrow from Input to Input */}

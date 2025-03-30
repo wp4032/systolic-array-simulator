@@ -200,7 +200,7 @@ export class SystolicArray {
   reset() {
     console.log('=== Resetting Array ===');
     this.cells = Array.from({ length: this.height }, () =>
-      Array.from({ length: this.width }, () => ({
+      Array.from({ length: this.width + 1 }, () => ({
         left_input: 0,
         top_input: 0,
         weight: 0,
@@ -210,6 +210,7 @@ export class SystolicArray {
     this.weight_counter = 0;
     this.ifmap_buffer = Array.from({ length: this.height }, () => Array.from({ length: this.width }, () => 0));
     this.weight_buffer = Array.from({ length: this.height }, () => Array.from({ length: this.width }, () => 0));
+    this.ofmap_buffer = Array.from({ length: this.height }, () => Array.from({ length: this.width }, () => 0));
     this.accumulated_results = Array.from({ length: this.width }, () => 0);
   }
 
