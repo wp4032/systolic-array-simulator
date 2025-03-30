@@ -28,6 +28,9 @@ export const OutputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, in
 
   // Add this useEffect to update values when animation state changes to "update"
   useEffect(() => {
+    // Clear any existing highlights when animation state changes
+    setHighlightedCells(Array.from({ length: rows }, () => Array(cols).fill(false)));
+    
     if (values) {
       const newValues = Array.from({ length: rows }, (_, i) =>
         Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)
