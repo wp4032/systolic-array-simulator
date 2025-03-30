@@ -106,12 +106,12 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
             case (animationPhase === 'translate' && acc_active):
               return 'text-white transition-all duration-1000 ease-in';
             case (animationPhase === 'idle' && acc_active):
-              return 'text-white';
+              return 'text-white transition-all duration-1000 ease-in';
             default:
               return 'invisible';
           }
         })()}`}>{top_input?.toFixed(2)}</p> 
-        <p className="absolute -top-[20px] font-mono text-neutral-500 text-xs text-center select-none">top_input_r</p> 
+        <p className="absolute -top-[20px] font-mono text-neutral-500 text-xs text-center select-none transition-all duration-1000 ease-in">top_input_r</p> 
       </div>  
 
       {/* Multiply */}
@@ -151,9 +151,9 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         <p className={`font-mono text-xs text-center select-none ${(() => {
           switch (true) {
             case (animationPhase === 'update'):
-              return 'invisible';
+              return 'opacity-0';
             case (animationPhase === 'translate'):
-              return `opacity-0`;
+              return `opacity-0 transition-all duration-1000 ease-in`;
             case (animationPhase === 'idle' && acc_active):
               return 'text-blue-300 opacity-100 transition-opacity duration-1000 ease-in';
             default:
@@ -163,13 +163,13 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         <p className={`absolute font-mono text-xs text-center select-none ${(() => {
           switch (true) {
             case (animationPhase === 'update' && is_bottom && ofmap_flush_status):
-              return 'text-blue-300';
+              return 'opacity-100 text-blue-300 transition-all duration-1000 ease-in';
             case (animationPhase === 'translate' && is_bottom && ofmap_flush_status):
               return `translate-y-[100px] visible translate-z-10 transition-all duration-1000 ease-in opacity-0`;
             case (animationPhase === 'idle' && acc_active && is_bottom && ofmap_flush_status):
-              return 'invisible';
+              return 'opacity-0 transition-all duration-1000 ease-in';
             default:
-              return 'invisible';
+              return 'opacity-0 transition-all duration-1000 ease-in';
           }
         })()}`}>{ofmap_flush}</p> 
         <p className={`absolute top-[25px] font-mono text-xs text-center select-none transition-colors duration-1000 ease-in ${(() => {
@@ -191,11 +191,11 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         <div className={`absolute font-mono text-xs text-center -rotate-90 select-none w-[50px] ${(() => {
           switch (true) {
             case (animationPhase === 'update' && left_input_active):
-              return `${is_left ? '-left-[100px] text-white' : '-left-[339px] text-red-300'}`;
+              return `${is_left ? '-left-[100px] text-white ' : '-left-[339px] text-red-300'}`;
             case (animationPhase === 'translate' && left_input_active):
-              return `left-1/2 -translate-x-1/2 visible translate-z-10 transition-all duration-1000 ease-in text-red-300`;
+              return `left-1/2 -translate-x-1/2 object-center mx-auto visible translate-z-10 transition-all duration-1000 ease-in text-red-300`;
             case (animationPhase === 'idle' && left_input_active):
-              return 'text-red-300';
+              return 'left-1/2 -translate-x-1/2 text-red-300';
             default:
               return 'invisible';
           }
@@ -205,11 +205,11 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         <div className={`absolute font-mono text-xs text-center -rotate-90 select-none ${(() => {
           switch (true) {
             case (animationPhase === 'update' && left_input_flush_active && is_right):
-              return 'text-red-300';
+              return 'text-red-300 opacity-100';
             case (animationPhase === 'translate' && left_input_flush_active && is_right):
               return `left-1/2 translate-x-[260px] visible translate-z-10 transition-all duration-1000 ease-in opacity-0`;
             default:
-              return 'invisible';
+              return 'left-1/2 translate-x-[260px] opacity-0 transition-all duration-1000 ease-in';
           }
         })()}`}>
           {left_input_flush?.toFixed(2)}

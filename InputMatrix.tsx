@@ -68,6 +68,8 @@ export const InputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, inp
 
   // Update values and highlight cells based on weight_counter
   useEffect(() => {
+    // Clear any existing highlights when animation state changes
+    setHighlightedCells(Array.from({ length: rows }, () => Array(cols).fill(false)));
     if (animationState === "update" && values) {
       const newValues = Array.from({ length: rows }, (_, i) =>
         Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)

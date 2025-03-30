@@ -9,11 +9,11 @@ interface MACUnitGridProps {
   animationPhase: 'init' | 'update' | 'translate' | 'idle';
 }
 
-export const MACUnitGrid: React.FC<MACUnitGridProps> = ({ array, size, animationPhase, scale=0.8 }) => {
+export const MACUnitGrid: React.FC<MACUnitGridProps> = ({ array, size, animationPhase, scale=0.5 }) => {
 
   
   return (
-    <div className="flex justify-center items-center" style={{ width: `${scale*620}px`, height: `${scale*620}px` }}>
+    <div className="flex justify-center items-center" style={{ width: `${scale * 620}px`, height: `${scale * 620}px` }}>
       <div 
         className={`absolute flex justify-center items-center grid grid-cols-2 gap-8 w-[620px]`}
         style={{ transform: scale !== 1 ? `scale(${scale})` : undefined }}
