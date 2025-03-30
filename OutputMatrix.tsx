@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from "react";
+import React, { useState, useImperativeHandle, forwardRef, useEffect, useRef } from "react";
 import { RoundedArrow } from "./RoundedArrow";
 
 interface MatrixProps {
@@ -8,19 +8,50 @@ interface MatrixProps {
   values?: number[][];
   className?: string;
   matrixName?: string;
-  locked?: boolean;
+  animationState?: string;
 }
 
 export interface MatrixRef {
   getValues: () => number[][];
 }
 
-export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = false, values, className, matrixName, locked = false }, ref) => {
+export const OutputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = false, values, className, matrixName, animationState }, ref) => {
   const defaultValues = Array.from({ length: rows }, (_, i) =>
     Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)
   );
   
   const [matrixValues, setMatrixValues] = useState(defaultValues);
+  const [highlightedCells, setHighlightedCells] = useState<boolean[][]>(
+    Array.from({ length: rows }, () => Array(cols).fill(false))
+  );
+  const prevValuesRef = useRef<number[][]>(defaultValues);
+
+  // Add this useEffect to update values when animation state changes to "update"
+  useEffect(() => {
+    if (animationState === "idle" && values) {
+      const newValues = Array.from({ length: rows }, (_, i) =>
+        Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)
+      );
+      
+      // Determine which cells have changed
+      const newHighlights = Array.from({ length: rows }, (_, i) =>
+        Array.from({ length: cols }, (_, j) => 
+          newValues[i][j] !== prevValuesRef.current[i]?.[j]
+        )
+      );
+      
+      setMatrixValues(newValues);
+      setHighlightedCells(newHighlights);
+      prevValuesRef.current = newValues;
+      
+      // Reset highlights after a short delay
+      const timer = setTimeout(() => {
+        setHighlightedCells(Array.from({ length: rows }, () => Array(cols).fill(false)));
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [animationState, values, rows, cols]);
 
   // Expose the getValues method to parent components
   useImperativeHandle(ref, () => ({
@@ -33,7 +64,7 @@ export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = 
     const key = e.key;
     
     // Only allow digits
-    if (!/^\d$/.test(key)) {
+    if (!/^\d$/.test(key) || !input) {
       e.preventDefault();
       return;
     }
@@ -52,12 +83,6 @@ export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = 
     
     e.preventDefault();
   };
-
-  useEffect(() => {
-    if (values) {
-      setMatrixValues(values);
-    }
-  }, [values]);
 
   return (
     <div className="relative m-4">
@@ -94,12 +119,14 @@ export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = 
               type="text"
               inputMode="numeric"
               value={val.toFixed(2)}
-              disabled={!input || locked}
-              onKeyDown={(e) => input && !locked && handleKeyPress(e, i, j)}
+              disabled={!input}
+              onKeyDown={(e) => input && handleKeyPress(e, i, j)}
               readOnly
-              className={`text-center text-white font-mono text-sm px-2 py-1 bg-black border rounded border-neutral-700 ${
-                input && !locked ? "focus:outline-none focus:border-blue-500" : "text-neutral-500"
-              }`}
+              className={`text-center text-white font-mono text-sm px-2 py-1 bg-black border rounded ${
+                highlightedCells[i][j] ? 'border-blue-500' : 'border-neutral-700'
+              } ${
+                input ? "focus:outline-none focus:border-blue-500" : "text-neutral-500 cursor-not-allowed"
+              } transition-colors duration-300`}
             />
           ))
         )}

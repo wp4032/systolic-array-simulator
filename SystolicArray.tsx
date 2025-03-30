@@ -112,6 +112,91 @@ export class SystolicArray {
     }
   }
 
+  reverse_step() {
+    // Decrement the weight counter first
+    if (this.weight_counter > 0) {
+      this.weight_counter--;
+    } else {
+      // Nothing to reverse if we're at the beginning
+      return;
+    }
+    
+    // Clear the current accumulated results at the bottom row
+    for (let x = 0; x < this.width; x++) {
+      if (x + (this.height - 1) === this.weight_counter) {
+        this.accumulated_results[x] = 0;
+      }
+    }
+    
+    // Revert the ofmap buffer changes
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if (x + y === this.weight_counter - this.width + 1) {
+          this.ofmap_buffer[y][x] = 0;
+        }
+      }
+    }
+    
+    // Revert MAC operations
+    for (let y = this.height - 1; y >= 0; y--) {
+      for (let x = this.width - 1; x >= 0; x--) {
+        // Store the current top_input before reverting
+        const current_top_input = this.cells[y][x].top_input;
+        
+        // Revert the accumulation
+        this.cells[y][x].acc = 0;
+        
+        // Shift inputs right (reverse of shifting left)
+        if (x < this.width - 1) {
+          this.cells[y][x + 1].left_input = 0;
+        }
+        
+        // Shift top inputs up (reverse of shifting down)
+        if (y > 0) {
+          this.cells[y][x].top_input = 0;
+        }
+        
+        // Clear weights that were loaded in this step
+        if (x + y === this.weight_counter) {
+          this.cells[y][x].weight = 0;
+        }
+      }
+    }
+    
+    // Clear inputs that were loaded in this step
+    for (let y = 0; y < this.height; y++) {
+      if (y === this.weight_counter) {
+        this.cells[y][0].left_input = 0;
+      }
+    }
+    
+    // Restore the previous state based on the current weight_counter
+    // This is a simplified approach - for a complete reverse, you would need to store previous states
+    let inputs = Array.from({ length: this.height }, () => 0);
+    let weights = Array.from({ length: this.width }, () => 0);
+    
+    // Load appropriate inputs and weights for the current counter
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if (x + y === this.weight_counter) {
+          inputs[y] = this.ifmap_buffer[y][x];
+          weights[y] = this.weight_buffer[y][x];
+        }
+      }
+    }
+    
+    // Recompute the current state
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        if (x + y <= this.weight_counter) {
+          this.cells[y][x].acc = this.cells[y][x].left_input * this.cells[y][x].weight + this.cells[y][x].top_input;
+        }
+      }
+    }
+    
+    console.log('Reversed to step:', this.weight_counter);
+  }
+
   reset() {
     console.log('=== Resetting Array ===');
     this.cells = Array.from({ length: this.height }, () =>

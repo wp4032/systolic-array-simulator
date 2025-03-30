@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from "react";
+import React, { useState, useImperativeHandle, forwardRef, useEffect, useRef } from "react";
 import { RoundedArrow } from "./RoundedArrow";
 
 interface MatrixProps {
@@ -9,18 +9,25 @@ interface MatrixProps {
   className?: string;
   matrixName?: string;
   locked?: boolean;
+  animationState?: string;
+  weight_counter?: number;
+  systolic_array_size?: number;
 }
 
 export interface MatrixRef {
   getValues: () => number[][];
 }
 
-export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = false, values, className, matrixName, locked = false }, ref) => {
+export const InputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = false, values, className, matrixName, locked = false, animationState, weight_counter, systolic_array_size }, ref) => {
   const defaultValues = Array.from({ length: rows }, (_, i) =>
     Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)
   );
   
   const [matrixValues, setMatrixValues] = useState(defaultValues);
+  const [highlightedCells, setHighlightedCells] = useState<boolean[][]>(
+    Array.from({ length: rows }, () => Array(cols).fill(false))
+  );
+  const prevValuesRef = useRef<number[][]>(defaultValues);
 
   // Expose the getValues method to parent components
   useImperativeHandle(ref, () => ({
@@ -58,6 +65,37 @@ export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = 
       setMatrixValues(values);
     }
   }, [values]);
+
+  // Update values and highlight cells based on weight_counter
+  useEffect(() => {
+    if (animationState === "update" && values) {
+      const newValues = Array.from({ length: rows }, (_, i) =>
+        Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)
+      );
+      
+      // Create new highlights based on weight_counter logic
+      const newHighlights = Array.from({ length: rows }, (_, i) =>
+        Array.from({ length: cols }, (_, j) => {
+          if (weight_counter !== undefined) {
+            // Highlight based on weight_counter logic similar to MACUnit
+            return weight_counter - 1 == i + j;
+          }
+          return false;
+        })
+      );
+      
+      setMatrixValues(newValues);
+      setHighlightedCells(newHighlights);
+      prevValuesRef.current = newValues;
+      
+      // Reset highlights after a short delay
+      const timer = setTimeout(() => {
+        setHighlightedCells(Array.from({ length: rows }, () => Array(cols).fill(false)));
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [animationState, values, rows, cols, weight_counter, systolic_array_size]);
 
   return (
     <div className="relative m-4">
@@ -97,9 +135,11 @@ export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = 
               disabled={!input || locked}
               onKeyDown={(e) => input && !locked && handleKeyPress(e, i, j)}
               readOnly
-              className={`text-center text-white font-mono text-sm px-2 py-1 bg-black border rounded border-neutral-700 ${
-                input && !locked ? "focus:outline-none focus:border-blue-500" : "text-neutral-500"
-              }`}
+              className={`text-center text-white font-mono text-sm px-2 py-1 bg-black border rounded ${
+                highlightedCells[i]?.[j] ? "border-red-500" : "border-neutral-700"
+              } ${
+                input && !locked ? "focus:outline-none focus:border-red-500" : "text-neutral-500"
+              } transition-colors duration-300 ease-in`}
             />
           ))
         )}
