@@ -12,6 +12,16 @@ export class SystolicArray {
   weight_buffer: Array<Array<number>>;
   ofmap_buffer: Array<Array<number>>;
   accumulated_results: Array<number>;
+  prev_cells: Array<Array<Array<{ 
+    left_input: number, 
+    top_input: number, 
+    weight: number, 
+    acc: number 
+  }>>>;
+  prev_ifmap_buffer: Array<Array<Array<number>>>;
+  prev_weight_buffer: Array<Array<Array<number>>>;
+  prev_ofmap_buffer: Array<Array<Array<number>>>;
+  prev_accumulated_results: Array<Array<number>>;
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -29,22 +39,51 @@ export class SystolicArray {
     this.weight_buffer = Array.from({ length: height }, () => Array.from({ length: width }, () => 0));
     this.ofmap_buffer = Array.from({ length: height }, () => Array.from({ length: width }, () => 0));
     this.accumulated_results = Array.from({ length: width }, () => 0);
+    // Saves the previous states as vectors
+    this.prev_cells = [];
+    this.prev_ifmap_buffer = [];
+    this.prev_weight_buffer = [];
+    this.prev_ofmap_buffer = [];
+    this.prev_accumulated_results = [];
   }
 
   load_ifmap(ifmap: Array<Array<number>>) {
+    if(this.ifmap_buffer) {
+      this.prev_ifmap_buffer.push(JSON.parse(JSON.stringify(this.ifmap_buffer)));
+    }
     this.ifmap_buffer = ifmap;
-    console.log('Loaded IFMAP:', this.ifmap_buffer);
   }
 
   load_weights(weights: Array<Array<number>>) {
+    if(this.weight_buffer) {
+      this.prev_weight_buffer.push(JSON.parse(JSON.stringify(this.weight_buffer)));
+    }
     this.weight_buffer = weights;
-    console.log('Loaded WEIGHTS:', this.weight_buffer);
   }
 
   step() {
+    console.log('Stepping...', this.cells);
+    
     let inputs = Array.from({ length: this.height }, () => 0);
     let weights = Array.from({ length: this.width }, () => 0);
 
+    // Create deep copies of all buffers to preserve previous state
+    this.prev_ifmap_buffer.push(JSON.parse(JSON.stringify(this.ifmap_buffer)));
+    this.prev_weight_buffer.push(JSON.parse(JSON.stringify(this.weight_buffer)));
+    this.prev_ofmap_buffer.push(JSON.parse(JSON.stringify(this.ofmap_buffer)));
+    this.prev_accumulated_results.push([...this.accumulated_results]);
+    
+    // Deep copy the cells structure and append to history
+    this.prev_cells.push(Array.from({ length: this.height }, (_, y) =>
+      Array.from({ length: this.width+1 }, (_, x) => ({
+        left_input: this.cells[y][x].left_input,
+        top_input: this.cells[y][x].top_input,
+        weight: this.cells[y][x].weight,
+        acc: this.cells[y][x].acc
+      }))
+    ));
+
+    console.log('Stepping...', this.prev_cells);
     
     // Load inputs and weights
     for (let x = 0; x < this.width; x++) {
@@ -113,89 +152,16 @@ export class SystolicArray {
   }
 
   reverse_step() {
-    // Decrement the weight counter first
-    if (this.weight_counter > 0) {
+    if(this.weight_counter >= 0) {
       this.weight_counter--;
-    } else {
-      // Nothing to reverse if we're at the beginning
-      return;
+      this.cells = this.prev_cells.pop() || [];
+      this.ifmap_buffer = this.prev_ifmap_buffer.pop() || [];
+      this.weight_buffer = this.prev_weight_buffer.pop() || [];
+      this.ofmap_buffer = this.prev_ofmap_buffer.pop() || [];
+      this.accumulated_results = this.prev_accumulated_results.pop() || [];
     }
-    
-    // Clear the current accumulated results at the bottom row
-    for (let x = 0; x < this.width; x++) {
-      if (x + (this.height - 1) === this.weight_counter) {
-        this.accumulated_results[x] = 0;
-      }
-    }
-    
-    // Revert the ofmap buffer changes
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        if (x + y === this.weight_counter - this.width + 1) {
-          this.ofmap_buffer[y][x] = 0;
-        }
-      }
-    }
-    
-    // Revert MAC operations
-    for (let y = this.height - 1; y >= 0; y--) {
-      for (let x = this.width - 1; x >= 0; x--) {
-        // Store the current top_input before reverting
-        const current_top_input = this.cells[y][x].top_input;
-        
-        // Revert the accumulation
-        this.cells[y][x].acc = 0;
-        
-        // Shift inputs right (reverse of shifting left)
-        if (x < this.width - 1) {
-          this.cells[y][x + 1].left_input = 0;
-        }
-        
-        // Shift top inputs up (reverse of shifting down)
-        if (y > 0) {
-          this.cells[y][x].top_input = 0;
-        }
-        
-        // Clear weights that were loaded in this step
-        if (x + y === this.weight_counter) {
-          this.cells[y][x].weight = 0;
-        }
-      }
-    }
-    
-    // Clear inputs that were loaded in this step
-    for (let y = 0; y < this.height; y++) {
-      if (y === this.weight_counter) {
-        this.cells[y][0].left_input = 0;
-      }
-    }
-    
-    // Restore the previous state based on the current weight_counter
-    // This is a simplified approach - for a complete reverse, you would need to store previous states
-    let inputs = Array.from({ length: this.height }, () => 0);
-    let weights = Array.from({ length: this.width }, () => 0);
-    
-    // Load appropriate inputs and weights for the current counter
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        if (x + y === this.weight_counter) {
-          inputs[y] = this.ifmap_buffer[y][x];
-          weights[y] = this.weight_buffer[y][x];
-        }
-      }
-    }
-    
-    // Recompute the current state
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        if (x + y <= this.weight_counter) {
-          this.cells[y][x].acc = this.cells[y][x].left_input * this.cells[y][x].weight + this.cells[y][x].top_input;
-        }
-      }
-    }
-    
-    console.log('Reversed to step:', this.weight_counter);
   }
+  
 
   reset() {
     console.log('=== Resetting Array ===');
@@ -212,6 +178,11 @@ export class SystolicArray {
     this.weight_buffer = Array.from({ length: this.height }, () => Array.from({ length: this.width }, () => 0));
     this.ofmap_buffer = Array.from({ length: this.height }, () => Array.from({ length: this.width }, () => 0));
     this.accumulated_results = Array.from({ length: this.width }, () => 0);
+    this.prev_cells = [];
+    this.prev_ifmap_buffer = [];
+    this.prev_weight_buffer = [];
+    this.prev_ofmap_buffer = [];
+    this.prev_accumulated_results = [];
   }
 
   printState() {

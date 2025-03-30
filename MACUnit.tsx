@@ -20,7 +20,7 @@ interface MACUnitProps {
   weight_counter?: number;
   accumulated_results?: number[];
   systolic_array_size: number;
-  animationPhase: 'update' | 'translate' | 'idle';
+  animationPhase: 'update' | 'translate' | 'idle' | 'init';
 }
 
 export const MACUnit = ({ className, left_input, left_input_flush, top_input, weight, weight_counter, acc, id, is_bottom, is_right, is_top, is_left, ifmap_buf, weight_buf, ofmap_buf, accumulated_results, systolic_array_size, animationPhase }: MACUnitProps) => {
@@ -54,14 +54,14 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
       <p className="text-white font-mono text-neutral-300 text-center text-xs absolute bottom-[10px] left-[10px] leading-none">MAC Unit {id}</p>
       <div className="weight_r absolute flex justify-center items-center absolute w-[50px] h-[25px] bg-black rounded top-[20%] left-1/3 -translate-x-1/2 -translate-y-1/2 border border-neutral-700">
       <p
-        className={`absolute font-mono text-xs text-center select-none ${(() => {
+        className={`absolute font-mono text-xs text-center select-none  ${(() => {
           switch (true) {
             case ((animationPhase === 'update' || animationPhase === 'translate') && !is_new_weight && acc_active):
-              return 'text-rose-300';
+              return 'text-rose-300 transition-all duration-1000 ease-in';
             case (animationPhase === 'update' && acc_active && is_new_weight):
-              return 'visible';
+              return 'visible transition-all duration-1000 ease-in';
             case (animationPhase === 'translate' && acc_active && is_new_weight):
-              return 'visible translate-z-10 transition-all duration-1000 ease-in text-rose-300';
+              return 'visible translate-z-10 text-rose-300 transition-all duration-1000 ease-in';
             case (animationPhase === 'idle' && acc_active):
               return 'text-rose-300';
             default:
