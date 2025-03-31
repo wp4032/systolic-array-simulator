@@ -79,7 +79,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
         {weight?.toFixed(2)}
         </p>
  
-        <p className={`absolute -top-[20px] font-mono text-xs text-center select-none transition-colors duration-1000 ease-in ${(() => {
+        <p className={`absolute m-0 -top-[20px] font-mono text-xs text-center select-none transition-colors duration-1000 ease-in ${(() => {
           switch (true) {
             case (animationPhase === 'update' && acc_active && is_new_weight):
               return "text-neutral-500";

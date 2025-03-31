@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useImperativeHandle, forwardRef, useEffect, useRef } from "react";
 import { RoundedArrow } from "./RoundedArrow";
 
@@ -100,7 +102,7 @@ export const InputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, inp
   }, [animationState, values, rows, cols, weight_counter, systolic_array_size]);
 
   return (
-    <div className="relative m-4">
+    <div className={`relative m-4 w-fit ${className}`}>
       {/* Left bracket */}
       <div className="absolute -left-[10px] -top-[10px] -translate-y-1/2">
         <RoundedArrow 
