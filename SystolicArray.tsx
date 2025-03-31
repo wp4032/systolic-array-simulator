@@ -64,8 +64,8 @@ export class SystolicArray {
   step() {
     console.log('Stepping...', this.cells);
     
-    let inputs = Array.from({ length: this.height }, () => 0);
-    let weights = Array.from({ length: this.width }, () => 0);
+    const inputs = Array.from({ length: this.height }, () => 0);
+    const weights = Array.from({ length: this.width }, () => 0);
 
     // Create deep copies of all buffers to preserve previous state
     this.prev_ifmap_buffer.push(JSON.parse(JSON.stringify(this.ifmap_buffer)));

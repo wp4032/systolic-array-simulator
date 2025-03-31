@@ -146,3 +146,6 @@ export const OutputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, in
     </div>
   );
 });
+
+// Add display name to the component
+OutputMatrix.displayName = 'OutputMatrix';

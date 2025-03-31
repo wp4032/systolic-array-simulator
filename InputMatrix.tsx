@@ -3,9 +3,9 @@
 import React, { useState, useImperativeHandle, forwardRef, useEffect, useRef } from "react";
 import { RoundedArrow } from "./RoundedArrow";
 
-interface MatrixProps {
-  rows: number;
-  cols: number;
+export interface MatrixProps {
+  rows?: number;
+  cols?: number;
   input?: boolean;
   values?: number[][];
   className?: string;
@@ -20,7 +20,7 @@ export interface MatrixRef {
   getValues: () => number[][];
 }
 
-export const InputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = false, values, className, matrixName, locked = false, animationState, weight_counter, systolic_array_size }, ref) => {
+export const InputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows = 2, cols = 2, input = false, values, className, matrixName, locked = false, animationState, weight_counter, systolic_array_size }, ref) => {
   const defaultValues = Array.from({ length: rows }, (_, i) =>
     Array.from({ length: cols }, (_, j) => values?.[i]?.[j] ?? 0)
   );
@@ -154,3 +154,6 @@ export const InputMatrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, inp
     </div>
   );
 });
+
+// Add display name to the component
+InputMatrix.displayName = 'InputMatrix';

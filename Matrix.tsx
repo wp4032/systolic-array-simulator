@@ -110,3 +110,6 @@ export const Matrix = forwardRef<MatrixRef, MatrixProps>(({ rows, cols, input = 
     </div>
   );
 });
+
+// Add display name to the component
+Matrix.displayName = 'Matrix';

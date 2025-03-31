@@ -1,15 +1,13 @@
 'use client'
 
-import BlogContainer from '@/app/components/sidebar/BlogContainer';
 import { SystolicArray } from '@/app/components/nnaccelerator/SystolicArray';
 import { useEffect, useState } from 'react';
 import { OutputMatrix } from '@/app/components/nnaccelerator/OutputMatrix';
 import { InputMatrix } from '@/app/components/nnaccelerator/InputMatrix';
 import { MACUnitGrid } from '@/app/components/nnaccelerator/MACUnitGrid';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
-import { getRandomValues } from 'crypto';
 
-interface SystolicSimulatorProps {
+export interface SystolicSimulatorProps {
   ifmap_buf?: number[][] | null;
   weight_buf?: number[][] | null;
   size?: number;
@@ -51,7 +49,7 @@ export default function SystolicSimulator({ size=2, debug = false, ifmap_buf, we
       newArray.load_weights(generateRandomMatrix(size));
     }
     setArray(newArray);
-  }, [size]);
+  }, [size, ifmap_buf, weight_buf]);
 
   // Effect to initialize the array to the specified step_count
   useEffect(() => {
@@ -63,7 +61,7 @@ export default function SystolicSimulator({ size=2, debug = false, ifmap_buf, we
       // Update the local step count state to match
       setStepCount(step_count);
     }
-  }, [array, step_count]);
+  }, [array, step_count, ifmap_buf, weight_buf]);
 
   // Effect for automatic looping animation
   useEffect(() => {
@@ -100,7 +98,7 @@ export default function SystolicSimulator({ size=2, debug = false, ifmap_buf, we
     return () => {
       clearTimeout(animationTimer);
     };
-  }, [array, looping, animationPhase, stepCount, step_count]);
+  }, [array, looping, animationPhase, stepCount, step_count, animation_speed]);
 
   const handleNextStep = () => {
     if (!array || looping) return;
@@ -166,17 +164,7 @@ export default function SystolicSimulator({ size=2, debug = false, ifmap_buf, we
   };
 
   return (
-      <div className="flex justify-center items-center flex-col mb-12 mt-12">
-        {/* <div className="grid grid-cols-4 gap-8 max-w-sm md:max-w-md lg:max-w-lg xl:max-w-3xl mx-auto">
-          {Array.from({ length: 16 }).map((_, index) => (
-            <div
-              key={index}
-              className="w-full h-full flex items-center justify-center cursor-pointer"
-            >
-              <MiniMACUnit />
-            </div>
-          ))}
-        </div> */}
+      <div className="flex justify-center items-center flex-col mb-12 mt-12 2xl:mb-16 2xl:mt-20">
         <div className="flex flex-col items-center gap-4">
           {debug && (
             <>

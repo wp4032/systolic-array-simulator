@@ -23,11 +23,11 @@ interface MACUnitProps {
   animationPhase: 'update' | 'translate' | 'idle' | 'init';
 }
 
-export const MACUnit = ({ className, left_input, left_input_flush, top_input, weight, weight_counter, acc, id, is_bottom, is_right, is_top, is_left, ifmap_buf, weight_buf, ofmap_buf, accumulated_results, systolic_array_size, animationPhase }: MACUnitProps) => {
+export const MACUnit = ({ left_input, left_input_flush, top_input, weight, weight_counter, acc, id, is_bottom, is_right, is_top, is_left, ofmap_buf, systolic_array_size, animationPhase }: MACUnitProps) => {
   const left_input_active = left_input !== 0;
   const left_input_flush_active = left_input_flush !== 0;
   const top_input_active = top_input !== 0;
-  const weight_active = weight !== 0;
+  // const weight_active = weight !== 0;
   const acc_active = acc !== 0;
 
   const sumDigits = (id: string | undefined): number => {
@@ -44,10 +44,10 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
   const ofmap_flush_status = weight_counter && weight_counter - systolic_array_size - 1 - col >= 0;
   const ofmap_flush = ofmap_buf?.[weight_counter ? weight_counter - systolic_array_size - 1 - col : 0]?.[col]?.toFixed(2);
 
-  const left_input_color = left_input_active ? "text-red-500" : "text-neutral-500";
-  const weight_color = weight_active ? "text-green-500" : "text-neutral-500";
+  // const left_input_color = left_input_active ? "text-red-500" : "text-neutral-500";
+  // const weight_color = weight_active ? "text-green-500" : "text-neutral-500";
   // const top_input_color = top_input_active ? "text-blue-500" : "text-neutral-500";
-  const acc_color = acc_active ? "text-blue-500" : "text-neutral-500";
+  // const acc_color = acc_active ? "text-blue-500" : "text-neutral-500";
 
   return (
     <div className="relative w-[300px] h-[300px] bg-neutral-900 rounded-2xl border border-neutral-700">
@@ -395,7 +395,7 @@ export const MACUnit = ({ className, left_input, left_input_flush, top_input, we
   );
 };
 
-export const MiniMACUnit = ({ className }: { className?: string }) => (
+export const MiniMACUnit = () => (
   <div className="relative w-[100px] h-[100px] bg-neutral-900 rounded-2xl border border-neutral-700">
     <div className="weight_r flex justify-center items-center absolute w-[25px] h-[9px] bg-black rounded top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 border border-neutral-700">
     </div>  
